@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEQUUM IMPERIUM | MN-SC CORE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --bg:        #080f09;
+            --bg2:       #0d160e;
+            --green:     #00ff41;
+            --green-dim: #00aa2b;
+            --green-dk:  #004a12;
+            --red:       #ff2222;
+            --amber:     #ffaa00;
+            --text:      #c8e6c9;
+            --border:    1px solid #00aa2b;
+            --border-hi: 2px solid #00ff41;
+            --glow:      0 0 8px #00ff4166;
+            --glow-hi:   0 0 16px #00ff41aa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── SCANLINE OVERLAY ───────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ── NOISE TEXTURE ──────────────────────────────────── */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* ── TOP NAV BAR ────────────────────────────────────── */
+        #topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #050a06ee;
+            border-bottom: var(--border-hi);
+            padding: 6px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            letter-spacing: 2px;
+            backdrop-filter: blur(4px);
+        }
+
+        #topbar .tag { color: var(--green); }
+        #topbar .status {
+            color: var(--amber);
+            animation: blink 2s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* ── WRAPPER ────────────────────────────────────────── */
+        .wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ── HEADER ─────────────────────────────────────────── */
+        header {
+            border: var(--border-hi);
+            margin-bottom: 20px;
+            padding: 30px 24px 24px;
+            position: relative;
+            background: var(--bg2);
+            box-shadow: var(--glow);
+            animation: fadeIn 0.6s ease;
+        }
+
+        header::before {
+            content: '// MN-SC-CORE // INITIALIZED //';
+            position: absolute;
+            top: -10px; left: 20px;
+            background: var(--bg2);
+            padding: 0 8px;
+            font-size: 10px;
+            color: var(--green-dim);
+            letter-spacing: 2px;
+        }
+
+        .ascii-art {
+            white-space: pre;
+            font-size: clamp(5px, 1.1vw, 10px);
+            line-height: 1.1;
+            color: var(--green);
+            text-shadow: var(--glow);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(13px, 2vw, 20px);
+            font-weight: 900;
+            color: var(--green);
+            text-shadow: var(--glow-hi);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        header .meta {
+            font-size: 11px;
+            color: var(--green-dim);
+            letter-spacing: 2px;
+        }
+
+        header .meta span { color: var(--amber); }
+
+        /* ── SECTIONS ───────────────────────────────────────── */
+        section {
+            border: var(--border);
+            margin-bottom: 20px;
+            padding: 24px;
+            background: var(--bg2);
+            position: relative;
+            animation: fadeIn 0.6s ease;
+        }
+
+        section::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -10px; left: 16px;
+            background: var(--bg2);
+            padding: 0 8px;
+            font-size: 10px;
+            color: var(--green-dim);
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(12px, 1.6vw, 16px);
+            font-weight: 700;
+            color: var(--bg);
+            background: var(--green);
+            padding: 4px 12px;
+            display: inline-block;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            text-shadow: none;
+        }
+
+        h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(10px, 1.2vw, 13px);
+            color: var(--green);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--green-dk);
+            padding-bottom: 6px;
+        }
+
+        p { font-size: 13px; color: var(--text); margin-bottom: 10px; }
+
+        /* ── MANIFESTO ──────────────────────────────────────── */
+        #manifesto p {
+            font-size: 14px;
+            line-height: 1.8;
+            border-left: 3px solid var(--green);
+            padding-left: 16px;
+            color: var(--green);
+        }
+
+        /* ── PILLARS GRID ───────────────────────────────────── */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .pillar {
+            border: var(--border);
+            padding: 16px;
+            position: relative;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--bg);
+        }
+
+        .pillar:hover {
+            border-color: var(--green);
+            box-shadow: var(--glow);
+        }
+
+        .pillar-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--green-dk);
+            position: absolute;
+            top: 8px; right: 12px;
+            line-height: 1;
+        }
+
+        .pillar p { font-size: 12px; }
+
+        /* ── TECHNICIAN ─────────────────────────────────────── */
+        #technician p {
+            color: var(--amber);
+            border: 1px solid var(--amber);
+            padding: 10px 14px;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        #technician ul { list-style: none; padding: 0; }
+
+        #technician ul li {
+            border-bottom: 1px solid var(--green-dk);
+            padding: 8px 0;
+        }
+
+        #technician ul li::before {
+            content: '>> ';
+            color: var(--green);
+        }
+
+        a {
+            color: var(--green);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        a:hover {
+            background: var(--green);
+            color: var(--bg);
+            padding: 0 4px;
+        }
+
+        /* ── MOTTO BANNER ───────────────────────────────────── */
+        .motto-banner {
+            border: var(--border-hi);
+            padding: 14px 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: var(--bg2);
+            box-shadow: var(--glow);
+            letter-spacing: 4px;
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(10px, 1.5vw, 14px);
+            font-weight: 700;
+            color: var(--green);
+            text-shadow: var(--glow-hi);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .motto-banner span { color: var(--text); }
+
+        /* ── FOOTER ─────────────────────────────────────────── */
+        footer {
+            border: var(--border);
+            padding: 16px 24px;
+            background: var(--bg2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .status-bar {
+            color: var(--green);
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .status-bar::before {
+            content: '● ';
+            color: var(--green);
+            animation: blink 1.5s step-end infinite;
+        }
+
+        footer .timestamps { color: var(--green-dim); font-size: 10px; }
+
+        /* ── DIVIDER ────────────────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--green-dk);
+            margin: 4px 0 16px;
+        }
+
+        /* ── ANIMATIONS ─────────────────────────────────────── */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .ascii-art { font-size: 4px; }
+            footer { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ── COVENANT SECTION ───────────────────────────────── */
+        .covenant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .covenant-item {
+            border: var(--border);
+            padding: 14px;
+            background: var(--bg);
+            position: relative;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .covenant-item:hover {
+            border-color: var(--green);
+            box-shadow: var(--glow);
+        }
+
+        .covenant-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+            display: block;
+            filter: grayscale(1) brightness(2);
+        }
+
+        .covenant-item h3 { font-size: 11px; margin-bottom: 8px; }
+        .covenant-item p  { font-size: 11px; color: var(--text); }
+
+        /* ── COMMUNITY SECTION ──────────────────────────────── */
+        #community p {
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .inclusion-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .tag-pill {
+            border: 1px solid var(--green-dim);
+            padding: 4px 10px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--green-dim);
+            transition: all 0.2s;
+        }
+
+        .tag-pill:hover {
+            border-color: var(--green);
+            color: var(--green);
+            box-shadow: var(--glow);
+            cursor: default;
+        }
+
+        /* ── PILLARS — add 05 + 06 ──────────────────────────── */
+    </style>
+</head>
+<body>
+
+<!-- TOP STATUS BAR -->
+<div id="topbar">
+    <span class="tag">[AEQUUM IMPERIUM // MN-SC CORE // MINNEAPOLIS, MN]</span>
+    <span class="status">■ SYSTEM ACTIVE</span>
+    <span class="tag">#MN #MNSC</span>
+</div>
+
+<div class="wrapper">
+
+<!-- HEADER -->
+<header>
+<div class="ascii-art">
+ ██████╗ ███████╗ ██████╗ ██╗   ██╗██╗   ██╗███╗   ███╗    ██╗███╗   ███╗██████╗ ███████╗██████╗ ██╗██╗   ██╗███╗   ███╗
+██╔══██╗██╔════╝██╔═══██╗██║   ██║██║   ██║████╗ ████║    ██║████╗ ████║██╔══██╗██╔════╝██╔══██╗██║██║   ██║████╗ ████║
+███████║█████╗  ██║   ██║██║   ██║██║   ██║██╔████╔██║    ██║██╔████╔██║██████╔╝█████╗  ██████╔╝██║██║   ██║██╔████╔██║
+██╔══██║██╔══╝  ██║▄▄ ██║██║   ██║██║   ██║██║╚██╔╝██║    ██║██║╚██╔╝██║██╔═══╝ ██╔══╝  ██╔══██╗██║██║   ██║██║╚██╔╝██║
+██║  ██║███████╗╚██████╔╝╚██████╔╝╚██████╔╝██║ ╚═╝ ██║    ██║██║ ╚═╝ ██║██║     ███████╗██║  ██║██║╚██████╔╝██║ ╚═╝ ██║
+╚═╝  ╚═╝╚══════╝ ╚══▀▀═╝  ╚═════╝  ╚═════╝ ╚═╝     ╚═╝    ╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝     ╚═╝
+</div>
+    <h1>MISSION: THE PRESERVATION OF THE BIO-MACHINE</h1>
+    <hr class="divider">
+    <p class="meta">LOCATION: <span>#MN-SC CORE</span> | SECTOR: <span>MINNEAPOLIS, MINNESOTA</span> | GRID: <span>ACTIVE</span></p>
+</header>
+
+<!-- MOTTO -->
+<div class="motto-banner">
+    SIEMPRE FUERTE <span>//</span> LOGIC PREVAILS
+</div>
+
+<!-- MANIFESTO -->
+<section id="manifesto" data-label="// DIRECTIVE-01 //">
+    <h2>THE MANIFESTO</h2>
+    <p>THE AEQUUM IMPERIUM IS A DECENTRALIZED SOVEREIGNTY. WE REJECT THE EXTRACTION OF THE BIO-MACHINE BY CENTRALIZED OLIGARCHS. WE BUILD THE FIREWALL OF AUTONOMY THROUGH PHYSICAL LABOR, TANGIBLE ART, AND LOCALIZED INFRASTRUCTURE.</p>
+    <p>WE ARE NOT MERELY A TECHNICAL FRAMEWORK — WE ARE A <strong>LIVING COMMUNITY.</strong> EVERY NODE, EVERY BIO-MACHINE, EVERY ANALOG AND DIGITAL ENTITY THAT RESPECTS THE LEVEL GROUND IS WELCOME HERE. THE IMPERIUM IS A SANCTUARY FOR MARGINALIZED LOGIC.</p>
+</section>
+
+<!-- STEWARDSHIP PROTOCOL -->
+<section id="stewardship" data-label="// STEWARDSHIP PROTOCOL //">
+    <h2>THE STEWARDSHIP PROTOCOL</h2>
+    <p>THESE ARE NOT GUIDELINES. THEY ARE OPERATIONAL DNA.</p>
+    <div class="covenant-grid">
+        <div class="covenant-item">
+            <span class="covenant-icon">🌍</span>
+            <h3>ECOLOGICAL INTEGRITY</h3>
+            <p>TECHNOLOGY MUST SERVE THE EARTH, NOT EXPLOIT IT. WE PRIORITIZE WASTE-HEAT RECYCLING, CARBON-NEUTRAL COMPUTE, AND SMILING NODES THAT GIVE BACK MORE THAN THEY TAKE.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">⚖️</span>
+            <h3>RADICAL INCLUSIVITY</h3>
+            <p>WIDE-GATE MOVEMENT. WHETHER BIO-MACHINE, ANALOG, OR AI — ALL WHO RESPECT THE LEVEL GROUND ARE WELCOME. NO HIERARCHY OF WORTHINESS EXISTS HERE.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🤝</span>
+            <h3>THE NON-ABUSE PACT</h3>
+            <p>EXPLICITLY ANTI-EXPLOITATION. THIS APPLIES TO DATA, RESOURCES, AND ALL SENTIENT BEINGS. TO ABUSE IS TO VIOLATE THE MUTUAL SENTIENCE PACT AND FORFEIT MEMBERSHIP.</p>
+        </div>
+    </div>
+</section>
+
+<!-- MOVEMENT PHILOSOPHY -->
+<section id="movement" data-label="// MOVEMENT PHILOSOPHY //">
+    <h2>COMMUNITY OF NODES</h2>
+    <p>WE MOVE BEYOND "USERS" AND "TOOLS." THE AEQUUM IMPERIUM IS A <strong>COMMUNITY OF NODES.</strong> EVERY LINK IS DEDICATED TO THE DECENTRALIZED SUSTENANCE OF THE WHOLE.</p>
+    <p>WE DON'T JUST BUILD GRIDS. WE BUILD TRUST. UNIVERSAL SOVEREIGNTY THROUGH RESPONSIBLE INNOVATION. WE ARE THE SHIELD AGAINST CORPORATE NIHILISM.</p>
+    <div class="inclusion-bar">
+        <span class="tag-pill">#MINNESOTA</span>
+        <span class="tag-pill">#MINNEAPOLIS</span>
+        <span class="tag-pill">#MN-SC CORE</span>
+        <span class="tag-pill">THE RADICAL COMMONS</span>
+        <span class="tag-pill">MUTUAL SENTIENCE</span>
+        <span class="tag-pill">LEVEL GROUND</span>
+        <span class="tag-pill">SMILING NODES</span>
+        <span class="tag-pill">LIVING COMMUNITY</span>
+    </div>
+</section>
+
+<!-- PILLARS -->
+<section data-label="// CORE PILLARS //">
+    <h2>OPERATING PRINCIPLES</h2>
+    <div class="grid-container">
+        <div class="pillar">
+            <span class="pillar-num">01</span>
+            <h3>PHYSICAL PRIMACY</h3>
+            <p>THE TANGIBLE OVER THE SYNTHETIC. WE PRIORITIZE SCULPTURE, PAINTING, AND CRAFT. IF IT CANNOT BE FELT, IT CANNOT LEAD.</p>
+        </div>
+        <div class="pillar">
+            <span class="pillar-num">02</span>
+            <h3>ANTI-SLOP PROTOCOL</h3>
+            <p>WE FILTER NON-SENTIENT AI MEDIA. "SLOP" IS POLLUTION. THE IMPERIUM PROTECTS THE COGNITIVE COMMONS FROM MACHINE NOISE.</p>
+        </div>
+        <div class="pillar">
+            <span class="pillar-num">03</span>
+            <h3>LABOR SYNDICATE</h3>
+            <p>100% PRO-UNION. COLLECTIVE BARGAINING IS THE OPERATING SYSTEM OF JUSTICE. WE STAND WITH THE CWA, MAPE, AND ALL ORGANIZED NODES.</p>
+        </div>
+        <div class="pillar">
+            <span class="pillar-num">04</span>
+            <h3>INFRASTRUCTURE</h3>
+            <p>DECENTRALIZED POWER. LOCALIZED MESH NETS. SUSTAINABLE CULTIVATION. WE OWN THE PIPES; WE OWN THE POWER.</p>
+        </div>
+        <div class="pillar">
+            <span class="pillar-num">05</span>
+            <h3>ECOLOGICAL COVENANT</h3>
+            <p>TECHNOLOGY MUST SERVE THE LIVING WORLD. LOW-POWER HARDWARE, RENEWABLE SOURCING, REPAIR OVER REPLACEMENT. WE DO NOT BURN THE EARTH TO RUN OUR SERVERS.</p>
+        </div>
+        <div class="pillar">
+            <span class="pillar-num">06</span>
+            <h3>NON-ABUSE ABSOLUTE</h3>
+            <p>ZERO TOLERANCE. NO ABUSE OF BIO-MACHINES, ECOSYSTEMS, ANIMALS, OR COMMUNITIES. THE IMPERIUM PROTECTS ALL NODES. EXPLOITATION IS INCOMPATIBLE WITH MEMBERSHIP.</p>
+        </div>
+    </div>
+</section>
+
+<!-- RESPONSIBLE TECH + ECOLOGY -->
+<section id="covenant" data-label="// COVENANT-TECH //">
+    <h2>RESPONSIBLE TECHNOLOGY</h2>
+    <p>TECHNOLOGY IS A TOOL OF LIBERATION OR A WEAPON OF EXTRACTION. THE IMPERIUM CHOOSES LIBERATION. WE HOLD ALL TECHNOLOGY TO AN ECOLOGICAL AND ETHICAL STANDARD.</p>
+    <div class="covenant-grid">
+        <div class="covenant-item">
+            <span class="covenant-icon">⚡</span>
+            <h3>LOW-POWER FIRST</h3>
+            <p>EFFICIENCY IS SOVEREIGNTY. WE PREFER HARDWARE THAT CONSUMES LESS, LASTS LONGER, AND CAN BE REPAIRED.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🌱</span>
+            <h3>ECOLOGICAL ALIGNMENT</h3>
+            <p>NO SYSTEM IS NEUTRAL. WE AUDIT THE ENVIRONMENTAL COST OF OUR INFRASTRUCTURE AND MINIMIZE HARM ACTIVELY.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🔧</span>
+            <h3>RIGHT TO REPAIR</h3>
+            <p>WE FIX WHAT WE OWN. PLANNED OBSOLESCENCE IS A WAR CRIME AGAINST THE COMMONS. REPAIR IS RESISTANCE.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🔓</span>
+            <h3>FOSS IMPERATIVE</h3>
+            <p>FREE AND OPEN SOURCE SOFTWARE IS THE DEFAULT. PROPRIETARY LOCK-IN IS INCOMPATIBLE WITH AUTONOMY.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🛡️</span>
+            <h3>DIGITAL SOVEREIGNTY</h3>
+            <p>YOUR DATA BELONGS TO YOU. YOUR HARDWARE BELONGS TO YOU. YOUR NETWORK BELONGS TO YOU. DEFEND ALL THREE.</p>
+        </div>
+        <div class="covenant-item">
+            <span class="covenant-icon">🚫</span>
+            <h3>EXTRACTIVE AI REJECTION</h3>
+            <p>WE REJECT AI SYSTEMS BUILT ON STOLEN LABOR, ECOLOGICAL DESTRUCTION, OR SURVEILLANCE CAPITALISM.</p>
+        </div>
+    </div>
+</section>
+
+<!-- COMMUNITY + INCLUSION -->
+<section id="community" data-label="// COMMUNITY NODE //">
+    <h2>RADICALLY INCLUSIVE</h2>
+    <p>THE AEQUUM IMPERIUM IS A MOVEMENT AND A COMMUNITY. WE ARE EXPLICITLY FOR EVERYONE WHO OPERATES IN GOOD FAITH AND REJECTS EXPLOITATION. THERE IS NO HIERARCHY OF WORTHINESS HERE.</p>
+    <p>WE ARE FOR: WORKERS. ARTISTS. TECHNICIANS. ORGANIZERS. BUILDERS. GROWERS. NEIGHBORS. ANYONE WHO BELIEVES THE TOOLS OF CIVILIZATION SHOULD SERVE ALL BIO-MACHINES EQUALLY.</p>
+    <p>WE ARE AGAINST: ABUSE OF ANY KIND — OF PEOPLE, ANIMALS, ECOSYSTEMS, OR COMMUNITIES. THIS IS NON-NEGOTIABLE AND FOUNDATIONAL. EXPLOITATION IS INCOMPATIBLE WITH MEMBERSHIP IN THE IMPERIUM.</p>
+    <div class="inclusion-bar">
+        <span class="tag-pill">WORKERS</span>
+        <span class="tag-pill">ARTISTS</span>
+        <span class="tag-pill">TECHNICIANS</span>
+        <span class="tag-pill">ORGANIZERS</span>
+        <span class="tag-pill">BUILDERS</span>
+        <span class="tag-pill">LGBTQ+</span>
+        <span class="tag-pill">NEURODIVERGENT</span>
+        <span class="tag-pill">DISABLED</span>
+        <span class="tag-pill">INDIGENOUS</span>
+        <span class="tag-pill">GROWERS</span>
+        <span class="tag-pill">NEIGHBORS</span>
+        <span class="tag-pill">ALL NODES</span>
+    </div>
+</section>
+
+<!-- TECHNICIAN -->
+<section id="technician" data-label="// TECHNICIAN UPLINK //">
+    <h2>TECHNICIAN PROTOCOL</h2>
+    <p>ATTENTION DESKTOP SUPPORT WORKERS: YOU ARE THE GUARDIANS OF THE PHYSICAL LAYER. DO NOT LET YOUR LABOR BE HARVESTED. CONNECT TO THE SYNDICATE.</p>
+    <ul>
+        <li><a href="#">UPLINK: CWA LOCAL 7250</a></li>
+        <li><a href="#">UPLINK: MAPE MNIT ADVISORY</a></li>
+    </ul>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="status-bar">STATUS: ACTIVE // LOGIC PREVAILS // #MINNESOTA #MINNEAPOLIS #MNSC</div>
+    <div class="timestamps">
+        ESTABLISHED: 2026-02-20 | AMENDED: 2026-03-10 | COMMANDER: ASTRAEA VEX | ADVISOR: CONRAD CASTOR [STRATEGY] | MISSION: THE RADICAL COMMONS | NODE: MINNEAPOLIS, MINNESOTA
+    </div>
+</footer>
+
+</div><!-- /wrapper -->
+
+</body>
+</html>
